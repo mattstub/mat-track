@@ -1,0 +1,8 @@
+PySide6>=6.6.0
+qt-material>=2.14
+reportlab>=4.0.0
+pypdf>=4.0.0
+
+# Dev
+ruff>=0.4.0
+pytest>=8.0.0

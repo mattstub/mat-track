@@ -1,0 +1,22 @@
+# Runtime data — never commit
+data/mat_tracker.db
+data/cut_sheets/
+data/assets/
+data/returned_submittals/
+data/output/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# PyInstaller
+*.spec
+
+# OS
+.DS_Store
+Thumbs.db
