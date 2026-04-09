@@ -9,9 +9,7 @@ import sqlite3
 from pathlib import Path
 
 
-def build_submittal_pdf(
-    conn: sqlite3.Connection, package_id: int, output_dir: Path
-) -> Path:
+def build_submittal_pdf(conn: sqlite3.Connection, package_id: int, output_dir: Path) -> Path:
     """Assemble and write the submittal package PDF. Returns the output path."""
     raise NotImplementedError
 
