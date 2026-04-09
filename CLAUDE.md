@@ -18,7 +18,7 @@ The app is in early development (planning phase only as of the initial commit). 
 ## Project Structure
 
 ```
-mat_tracker/
+mat-track/
 ├── main.py                  # App entry point
 ├── db/
 │   ├── connection.py        # SQLite connection singleton

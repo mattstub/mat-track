@@ -3,10 +3,20 @@
 import sqlite3
 from typing import Any
 
-_ALLOWED_COLS = frozenset({
-    "company_id", "name", "project_number", "gc_name", "gc_project_number",
-    "architect_name", "engineer_name", "location", "status", "notes",
-})
+_ALLOWED_COLS = frozenset(
+    {
+        "company_id",
+        "name",
+        "project_number",
+        "gc_name",
+        "gc_project_number",
+        "architect_name",
+        "engineer_name",
+        "location",
+        "status",
+        "notes",
+    }
+)
 
 
 def _validate_cols(fields: dict) -> None:

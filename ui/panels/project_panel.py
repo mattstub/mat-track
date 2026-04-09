@@ -24,7 +24,7 @@ class ProjectPanel(QWidget):
     def __init__(self, conn: sqlite3.Connection, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.conn = conn
-        self._companies: list = []   # list of sqlite3.Row
+        self._companies: list = []  # list of sqlite3.Row
         self._build_ui()
 
     def _build_ui(self) -> None:

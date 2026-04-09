@@ -12,6 +12,7 @@ from db.seed import seed
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def make_company(conn, *, name="Acme Corp", short_name="Acme", **extra):
     """Insert a company and return its id."""
     return company_model.create(conn, name=name, short_name=short_name, **extra)
@@ -31,6 +32,7 @@ def make_project(conn, company_id, *, name="Project Alpha", project_number="001"
 # ===========================================================================
 # company model
 # ===========================================================================
+
 
 class TestCompanyCreate:
     def test_returns_int_id(self, db):
@@ -126,6 +128,7 @@ class TestCompanyDelete:
 # project model
 # ===========================================================================
 
+
 class TestProjectCreate:
     def test_returns_int_id(self, db):
         cid = make_company(db)
@@ -218,9 +221,7 @@ class TestProjectUpdate:
 
     def test_other_fields_unchanged(self, db):
         cid = make_company(db)
-        pid = make_project(
-            db, cid, name="Stable", project_number="S01", gc_name="GC Corp"
-        )
+        pid = make_project(db, cid, name="Stable", project_number="S01", gc_name="GC Corp")
         project_model.update(db, pid, name="Changed Name")
         row = project_model.get(db, pid)
         assert row["project_number"] == "S01"
@@ -263,6 +264,7 @@ class TestProjectDelete:
 # ===========================================================================
 # seed
 # ===========================================================================
+
 
 class TestSeed:
     def test_seed_inserts_two_companies(self, db):
