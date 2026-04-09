@@ -87,21 +87,22 @@ mat_tracker/
 ## Commands
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# First-time setup — create venv and install dependencies
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 
 # Run the app
-python main.py
+.venv/bin/python main.py
 
 # Run all tests
-python -m pytest
+.venv/bin/python -m pytest
 
 # Run a single test file
-python -m pytest tests/test_lifecycle.py
+.venv/bin/python -m pytest tests/test_db_models.py
 
 # Lint and format
-ruff check .
-ruff format .
+.venv/bin/ruff check .
+.venv/bin/ruff format .
 ```
 
 ## UI / UX Rules
