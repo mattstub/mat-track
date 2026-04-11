@@ -4,6 +4,7 @@ import sqlite3
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QCheckBox,
     QHBoxLayout,
     QHeaderView,
     QLabel,
@@ -16,6 +17,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from core import document_builder
 from db.models import purchase_order as po_model
 from ui.dialogs.new_po import NewPODialog
 
@@ -47,6 +49,7 @@ class POPanel(QWidget):
         super().__init__(parent)
         self.conn = conn
         self._project_id: int | None = None
+        self._selected_po_id: int | None = None
         self._mode: str = "all"  # "project" | "all"
         self._build_ui()
 
@@ -67,6 +70,14 @@ class POPanel(QWidget):
         self._btn_new_po.setEnabled(False)
         self._btn_new_po.clicked.connect(self._on_new_po)
         toolbar.addWidget(self._btn_new_po)
+
+        self._btn_generate_pdf = QPushButton("Generate PO PDF")
+        self._btn_generate_pdf.setEnabled(False)
+        self._btn_generate_pdf.clicked.connect(self._on_generate_pdf)
+        toolbar.addWidget(self._btn_generate_pdf)
+
+        self._chk_receipt_mode = QCheckBox("Field Receipt Sheet")
+        toolbar.addWidget(self._chk_receipt_mode)
 
         toolbar.addStretch()
 
@@ -208,9 +219,13 @@ class POPanel(QWidget):
         selected = self._po_table.selectedItems()
         if not selected:
             self._li_table.setRowCount(0)
+            self._btn_generate_pdf.setEnabled(False)
+            self._selected_po_id = None
             return
 
         po_id = selected[0].data(Qt.UserRole)
+        self._selected_po_id = po_id
+        self._btn_generate_pdf.setEnabled(True)
         self._populate_line_items(po_id)
 
     def _populate_line_items(self, po_id: int) -> None:
@@ -251,3 +266,24 @@ class POPanel(QWidget):
         dlg = NewPODialog(self.conn, self._project_id, parent=self)
         if dlg.exec():
             self.refresh()
+
+    def _on_generate_pdf(self) -> None:
+        if self._selected_po_id is None:
+            QMessageBox.information(self, "No PO Selected", "Select a purchase order first.")
+            return
+
+        field_receipt = self._chk_receipt_mode.isChecked()
+        try:
+            output_path = document_builder.build_po_pdf(
+                self.conn,
+                self._selected_po_id,
+                field_receipt_mode=field_receipt,
+            )
+            mode_label = "Field Receipt Sheet" if field_receipt else "PO PDF"
+            QMessageBox.information(
+                self,
+                "PDF Generated",
+                f"{mode_label} saved to:\n{output_path}",
+            )
+        except Exception as exc:
+            QMessageBox.critical(self, "PDF Error", f"Could not generate PDF:\n{exc}")
