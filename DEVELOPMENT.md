@@ -603,12 +603,12 @@ This surfaces "previously approved on 2512 Wings" information directly in the se
 - [x] `ui/widgets/stage_indicator.py` — color-coded stage widget
 - [x] `core/lifecycle.py` — stage calculation
 
-### Phase 4 — Suppliers & Purchase Orders
-- [ ] `db/models/supplier.py`, `purchase_order.py`
-- [ ] `ui/panels/supplier_panel.py`
-- [ ] `ui/panels/po_panel.py`
-- [ ] `ui/dialogs/new_po.py` — select items, assign to PO
-- [ ] `ui/dialogs/supplier_edit.py`
+### Phase 4 — Suppliers & Purchase Orders ✓
+- [x] `db/models/supplier.py`, `purchase_order.py`
+- [x] `ui/panels/supplier_panel.py`
+- [x] `ui/panels/po_panel.py`
+- [x] `ui/dialogs/new_po.py` — select items, assign to PO
+- [x] `ui/dialogs/supplier_edit.py`
 
 ### Phase 5 — PDF: Submittal Package
 - [ ] `documents/submittal_pdf.py` — ReportLab cover sheet + TOC

@@ -17,9 +17,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ui.dialogs.new_po import NewPODialog
 from ui.dialogs.new_project import NewProjectDialog
+from ui.panels.po_panel import POPanel
 from ui.panels.project_panel import ProjectPanel
 from ui.panels.submittal_panel import SubmittalPanel
+from ui.panels.supplier_panel import SupplierPanel
 
 
 class MainWindow(QMainWindow):
@@ -47,11 +50,15 @@ class MainWindow(QMainWindow):
         self._btn_new_submittal.clicked.connect(self._on_new_submittal)
         toolbar.addWidget(self._btn_new_submittal)
 
-        # Placeholder buttons for later phases
-        for label in ("+ Material", "+ PO"):
-            btn = QPushButton(label)
-            btn.setEnabled(False)
-            toolbar.addWidget(btn)
+        # + Material — Phase 6
+        btn_material = QPushButton("+ Material")
+        btn_material.setEnabled(False)
+        toolbar.addWidget(btn_material)
+
+        self._btn_new_po = QPushButton("+ PO")
+        self._btn_new_po.setEnabled(False)
+        self._btn_new_po.clicked.connect(self._on_new_po)
+        toolbar.addWidget(self._btn_new_po)
 
         # Spacer to push future search widget to the right
         spacer = QWidget()
@@ -83,14 +90,24 @@ class MainWindow(QMainWindow):
         self._page_projects = self._build_projects_page()
         self._content_stack.addWidget(self._page_projects)
 
-        # Tabs 1-3 — placeholders
-        for label in ("Catalog", "Suppliers", "All POs"):
-            placeholder = QWidget()
-            ph_layout = QVBoxLayout(placeholder)
-            lbl = QLabel(f"{label} — coming in a later phase")
-            lbl.setAlignment(Qt.AlignCenter)
-            ph_layout.addWidget(lbl)
-            self._content_stack.addWidget(placeholder)
+        # Tab 1 — Catalog: placeholder (Phase 2 catalog panel wired in later)
+        catalog_placeholder = QWidget()
+        ph_layout = QVBoxLayout(catalog_placeholder)
+        lbl = QLabel("Catalog — coming in a later phase")
+        lbl.setAlignment(Qt.AlignCenter)
+        ph_layout.addWidget(lbl)
+        self._content_stack.addWidget(catalog_placeholder)
+
+        # Tab 2 — Suppliers
+        self._supplier_panel = SupplierPanel(self.conn)
+        self._content_stack.addWidget(self._supplier_panel)
+
+        # Tab 3 — All POs
+        self._po_panel_all = POPanel(self.conn)
+        self._content_stack.addWidget(self._po_panel_all)
+
+        # Load initial data for always-visible panels
+        self._po_panel_all.load_all()
 
         # Start on Projects tab
         self._tab_bar.setCurrentIndex(0)
@@ -154,6 +171,14 @@ class MainWindow(QMainWindow):
         self._current_project_id = project_id
         self._submittal_panel.load_project(project_id)
         self._btn_new_submittal.setEnabled(True)
+        self._btn_new_po.setEnabled(True)
 
     def _on_new_submittal(self) -> None:
         self._submittal_panel._on_new_package()
+
+    def _on_new_po(self) -> None:
+        if not hasattr(self, "_current_project_id"):
+            return
+        dlg = NewPODialog(self.conn, self._current_project_id, parent=self)
+        if dlg.exec():
+            self._po_panel_all.refresh()
