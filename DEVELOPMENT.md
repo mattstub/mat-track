@@ -594,14 +594,14 @@ This surfaces "previously approved on 2512 Wings" information directly in the se
 - [ ] `ui/dialogs/new_product.py` — add product, attach cut sheet path
 - [ ] `core/catalog.py` — search with usage history
 
-### Phase 3 — Submittals & Materials
-- [ ] `db/models/submittal_package.py`, `fixture_group.py`, `project_material.py`
-- [ ] `ui/panels/submittal_panel.py` — package list per project
-- [ ] `ui/dialogs/new_submittal_package.py`
-- [ ] `ui/dialogs/new_fixture_group.py`
-- [ ] `ui/dialogs/add_material.py` — catalog search → assign to group
-- [ ] `ui/widgets/stage_indicator.py` — color-coded stage widget
-- [ ] `core/lifecycle.py` — stage calculation
+### Phase 3 — Submittals & Materials ✓
+- [x] `db/models/submittal_package.py`, `fixture_group.py`, `project_material.py`
+- [x] `ui/panels/submittal_panel.py` — package list per project
+- [x] `ui/dialogs/new_submittal_package.py`
+- [x] `ui/dialogs/new_fixture_group.py`
+- [x] `ui/dialogs/add_material.py` — catalog search → assign to group
+- [x] `ui/widgets/stage_indicator.py` — color-coded stage widget
+- [x] `core/lifecycle.py` — stage calculation
 
 ### Phase 4 — Suppliers & Purchase Orders
 - [ ] `db/models/supplier.py`, `purchase_order.py`
