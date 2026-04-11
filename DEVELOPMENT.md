@@ -610,11 +610,11 @@ This surfaces "previously approved on 2512 Wings" information directly in the se
 - [x] `ui/dialogs/new_po.py` — select items, assign to PO
 - [x] `ui/dialogs/supplier_edit.py`
 
-### Phase 5 — PDF: Submittal Package
-- [ ] `documents/submittal_pdf.py` — ReportLab cover sheet + TOC
-- [ ] `documents/po_pdf.py` — ReportLab PO layout
-- [ ] Cut sheet PDF merging via pypdf
-- [ ] PDF saved to `data/output/` keyed by project + submittal number
+### Phase 5 — PDF: Submittal Package ✓
+- [x] `documents/submittal_pdf.py` — ReportLab cover sheet + TOC
+- [x] `documents/po_pdf.py` — ReportLab PO layout
+- [x] Cut sheet PDF merging via pypdf
+- [x] PDF saved to `data/output/` keyed by project + submittal number
 
 ### Phase 6 — Lifecycle Editing
 - [ ] `ui/dialogs/lifecycle_edit.py` — edit stages 2–5

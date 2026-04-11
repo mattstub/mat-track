@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from core import document_builder
 from db.models import fixture_group as fixture_group_model
 from db.models import project as project_model
 from db.models import project_material as project_material_model
@@ -78,6 +79,12 @@ class SubmittalPanel(QWidget):
         toolbar.addWidget(self._btn_add_material)
 
         toolbar.addStretch()
+
+        self._btn_generate_pdf = QPushButton("Generate Submittal PDF")
+        self._btn_generate_pdf.setEnabled(False)
+        self._btn_generate_pdf.clicked.connect(self._on_generate_pdf)
+        toolbar.addWidget(self._btn_generate_pdf)
+
         layout.addLayout(toolbar)
 
         # --- Tree widget ---
@@ -223,6 +230,7 @@ class SubmittalPanel(QWidget):
             self._selected_group_id = None
             self._btn_new_group.setEnabled(False)
             self._btn_add_material.setEnabled(False)
+            self._btn_generate_pdf.setEnabled(False)
             return
 
         item = selected[0]
@@ -233,10 +241,10 @@ class SubmittalPanel(QWidget):
             self._selected_group_id = None
             self._btn_new_group.setEnabled(True)
             self._btn_add_material.setEnabled(False)
+            self._btn_generate_pdf.setEnabled(True)
             self.package_selected.emit(row_id)
 
         elif kind == "group":
-            # The parent is a package item
             parent_item = item.parent()
             if parent_item:
                 _, pkg_id = parent_item.data(COL_TITLE, Qt.UserRole)
@@ -244,10 +252,10 @@ class SubmittalPanel(QWidget):
             self._selected_group_id = row_id
             self._btn_new_group.setEnabled(True)
             self._btn_add_material.setEnabled(True)
+            self._btn_generate_pdf.setEnabled(True)
             self.fixture_group_selected.emit(row_id)
 
         elif kind == "material":
-            # Walk up to find group and package
             group_item = item.parent()
             if group_item:
                 _, grp_id = group_item.data(COL_TITLE, Qt.UserRole)
@@ -258,6 +266,7 @@ class SubmittalPanel(QWidget):
                     self._selected_package_id = pkg_id
             self._btn_new_group.setEnabled(True)
             self._btn_add_material.setEnabled(True)
+            self._btn_generate_pdf.setEnabled(True)
 
     # ------------------------------------------------------------------
     # Button handlers
@@ -347,3 +356,20 @@ class SubmittalPanel(QWidget):
         )
         if dlg.exec():
             self.refresh()
+
+    def _on_generate_pdf(self) -> None:
+        if self._selected_package_id is None:
+            QMessageBox.information(
+                self, "No Package Selected", "Select a submittal package first."
+            )
+            return
+
+        try:
+            output_path = document_builder.build_submittal_pdf(self.conn, self._selected_package_id)
+            QMessageBox.information(
+                self,
+                "PDF Generated",
+                f"Submittal PDF saved to:\n{output_path}",
+            )
+        except Exception as exc:
+            QMessageBox.critical(self, "PDF Error", f"Could not generate PDF:\n{exc}")
