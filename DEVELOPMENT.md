@@ -617,9 +617,10 @@ This surfaces "previously approved on 2512 Wings" information directly in the se
 - [x] PDF saved to `data/output/` keyed by project + submittal number
 
 ### Phase 6 — Lifecycle Editing
-- [ ] `ui/dialogs/lifecycle_edit.py` — edit stages 2–5
-- [ ] Supplier notification status fields
-- [ ] Receipt logging (partial vs. full)
+- [x] `ui/dialogs/lifecycle_edit.py` — edit stages 2–5
+- [x] Supplier notification status fields
+- [x] Receipt logging (partial vs. full)
+- [x] "Edit Stages" button wired into submittal panel (enabled when material selected)
 
 ### Phase 7 — Dashboard & Action Queues
 - [ ] "Items Needing Action" view — anything stuck at stage 1-4
