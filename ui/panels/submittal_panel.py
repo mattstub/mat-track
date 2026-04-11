@@ -20,6 +20,7 @@ from db.models import project as project_model
 from db.models import project_material as project_material_model
 from db.models import submittal_package as submittal_package_model
 from ui.dialogs.add_material import AddMaterialDialog
+from ui.dialogs.lifecycle_edit import LifecycleEditDialog
 from ui.dialogs.new_fixture_group import NewFixtureGroupDialog
 from ui.dialogs.new_submittal_package import NewSubmittalPackageDialog
 from ui.widgets.stage_indicator import StageIndicator
@@ -49,6 +50,7 @@ class SubmittalPanel(QWidget):
         self._project_number: str = ""
         self._selected_package_id: int | None = None
         self._selected_group_id: int | None = None
+        self._selected_material_id: int | None = None
         self._build_ui()
 
     # ------------------------------------------------------------------
@@ -77,6 +79,11 @@ class SubmittalPanel(QWidget):
         self._btn_add_material.setEnabled(False)
         self._btn_add_material.clicked.connect(self._on_add_material)
         toolbar.addWidget(self._btn_add_material)
+
+        self._btn_edit_stages = QPushButton("Edit Stages")
+        self._btn_edit_stages.setEnabled(False)
+        self._btn_edit_stages.clicked.connect(self._on_edit_stages)
+        toolbar.addWidget(self._btn_edit_stages)
 
         toolbar.addStretch()
 
@@ -112,8 +119,10 @@ class SubmittalPanel(QWidget):
         self._project_id = project_id
         self._selected_package_id = None
         self._selected_group_id = None
+        self._selected_material_id = None
         self._btn_new_group.setEnabled(False)
         self._btn_add_material.setEnabled(False)
+        self._btn_edit_stages.setEnabled(False)
 
         # Resolve project_number for submittal-number suggestions
         try:
@@ -228,8 +237,10 @@ class SubmittalPanel(QWidget):
         if not selected:
             self._selected_package_id = None
             self._selected_group_id = None
+            self._selected_material_id = None
             self._btn_new_group.setEnabled(False)
             self._btn_add_material.setEnabled(False)
+            self._btn_edit_stages.setEnabled(False)
             self._btn_generate_pdf.setEnabled(False)
             return
 
@@ -239,8 +250,10 @@ class SubmittalPanel(QWidget):
         if kind == "package":
             self._selected_package_id = row_id
             self._selected_group_id = None
+            self._selected_material_id = None
             self._btn_new_group.setEnabled(True)
             self._btn_add_material.setEnabled(False)
+            self._btn_edit_stages.setEnabled(False)
             self._btn_generate_pdf.setEnabled(True)
             self.package_selected.emit(row_id)
 
@@ -250,8 +263,10 @@ class SubmittalPanel(QWidget):
                 _, pkg_id = parent_item.data(COL_TITLE, Qt.UserRole)
                 self._selected_package_id = pkg_id
             self._selected_group_id = row_id
+            self._selected_material_id = None
             self._btn_new_group.setEnabled(True)
             self._btn_add_material.setEnabled(True)
+            self._btn_edit_stages.setEnabled(False)
             self._btn_generate_pdf.setEnabled(True)
             self.fixture_group_selected.emit(row_id)
 
@@ -264,8 +279,10 @@ class SubmittalPanel(QWidget):
                 if pkg_item:
                     _, pkg_id = pkg_item.data(COL_TITLE, Qt.UserRole)
                     self._selected_package_id = pkg_id
+            self._selected_material_id = row_id
             self._btn_new_group.setEnabled(True)
             self._btn_add_material.setEnabled(True)
+            self._btn_edit_stages.setEnabled(True)
             self._btn_generate_pdf.setEnabled(True)
 
     # ------------------------------------------------------------------
@@ -354,6 +371,16 @@ class SubmittalPanel(QWidget):
             project_id=self._project_id,
             parent=self,
         )
+        if dlg.exec():
+            self.refresh()
+
+    def _on_edit_stages(self) -> None:
+        if self._selected_material_id is None:
+            QMessageBox.information(
+                self, "No Material Selected", "Please select a material row first."
+            )
+            return
+        dlg = LifecycleEditDialog(self.conn, self._selected_material_id, parent=self)
         if dlg.exec():
             self.refresh()
 
