@@ -22,12 +22,40 @@ def current_stage(material: dict[str, Any], fixture_group: dict[str, Any]) -> in
     Returns:
         The highest completed stage (1–5).
     """
-    raise NotImplementedError
+    # Stage 5: fully received OR any qty received — trust most advanced state regardless
+    fully_received = material.get("fully_received")
+    qty_received = material.get("qty_received") or 0
+    if fully_received or qty_received > 0:
+        return 5
+
+    # Evaluate stages 2–4 sequentially; each requires all prior conditions.
+    approved_statuses = {"Approved As Submitted", "Approved As Noted"}
+    review_status = fixture_group.get("review_status")
+    supplier_notified = material.get("supplier_notified")
+    stage_2_met = review_status in approved_statuses and bool(supplier_notified)
+
+    if not stage_2_met:
+        return 1
+
+    po_id = material.get("po_id")
+    stage_3_met = po_id is not None
+
+    if not stage_3_met:
+        return 2
+
+    stored_stage = material.get("stage") or 1
+    stage_4_met = stored_stage >= 4
+
+    if not stage_4_met:
+        return 3
+
+    return 4
 
 
 def can_advance_to_stage_2(fixture_group: dict[str, Any]) -> bool:
     """True if the fixture group's review_status clears materials for procurement."""
-    raise NotImplementedError
+    approved_statuses = {"Approved As Submitted", "Approved As Noted"}
+    return fixture_group.get("review_status") in approved_statuses
 
 
 def stage_label(stage: int) -> str:

@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 
 from ui.dialogs.new_project import NewProjectDialog
 from ui.panels.project_panel import ProjectPanel
+from ui.panels.submittal_panel import SubmittalPanel
 
 
 class MainWindow(QMainWindow):
@@ -41,8 +42,13 @@ class MainWindow(QMainWindow):
 
         toolbar.addSeparator()
 
+        self._btn_new_submittal = QPushButton("+ Submittal")
+        self._btn_new_submittal.setEnabled(False)
+        self._btn_new_submittal.clicked.connect(self._on_new_submittal)
+        toolbar.addWidget(self._btn_new_submittal)
+
         # Placeholder buttons for later phases
-        for label in ("+ Submittal", "+ Material", "+ PO"):
+        for label in ("+ Material", "+ PO"):
             btn = QPushButton(label)
             btn.setEnabled(False)
             toolbar.addWidget(btn)
@@ -109,13 +115,9 @@ class MainWindow(QMainWindow):
         sep1.setStyleSheet("background-color: #cccccc;")
         h_layout.addWidget(sep1)
 
-        # Center panel — placeholder (Phase 3: submittal panel)
-        self._center_panel = QWidget()
-        center_layout = QVBoxLayout(self._center_panel)
-        center_lbl = QLabel("Submittal packages — Phase 3")
-        center_lbl.setAlignment(Qt.AlignCenter)
-        center_layout.addWidget(center_lbl)
-        h_layout.addWidget(self._center_panel, stretch=2)
+        # Center panel — SubmittalPanel
+        self._submittal_panel = SubmittalPanel(self.conn, parent=page)
+        h_layout.addWidget(self._submittal_panel, stretch=2)
 
         # Vertical separator
         sep2 = QWidget()
@@ -149,6 +151,9 @@ class MainWindow(QMainWindow):
 
     def _on_project_selected(self, project_id: int) -> None:
         """Called when the user selects a project in the left panel."""
-        # Phase 3 will wire this to the center and right panels.
-        # For now, store the selection so later phases can use it.
         self._current_project_id = project_id
+        self._submittal_panel.load_project(project_id)
+        self._btn_new_submittal.setEnabled(True)
+
+    def _on_new_submittal(self) -> None:
+        self._submittal_panel._on_new_package()
